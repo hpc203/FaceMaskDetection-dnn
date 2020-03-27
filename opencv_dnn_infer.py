@@ -27,7 +27,10 @@ def puttext_chinese(img, text, point, color):
     draw = ImageDraw.Draw(pilimg)  # 图片上打印汉字
     fontsize = int(min(img.shape[:2])*0.04)
     font = ImageFont.truetype("simhei.ttf", fontsize, encoding="utf-8")
-    draw.text((point[0], point[1]-font.getsize(text)[1]), text, color, font=font)
+    y = point[1]-font.getsize(text)[1]
+    if y <= font.getsize(text)[1]:
+        y = point[1]+font.getsize(text)[1]
+    draw.text((point[0], y), text, color, font=font)
     img = np.asarray(pilimg)
     return img
 
