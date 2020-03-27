@@ -22,11 +22,12 @@ id2class = {0: 'Mask', 1: 'NoMask'}
 id2chiclass = {0: '您带了口罩', 1: '您没有戴口罩'}
 colors = ((0, 255, 0), (255, 0 , 0))
 
-font = ImageFont.truetype("simhei.ttf", 20, encoding="utf-8")
 def puttext_chinese(img, text, point, color):
     pilimg = Image.fromarray(img)
     draw = ImageDraw.Draw(pilimg)  # 图片上打印汉字
-    draw.text(point, text, color, font=font)
+    fontsize = int(min(img.shape[:2])*0.04)
+    font = ImageFont.truetype("simhei.ttf", fontsize, encoding="utf-8")
+    draw.text((point[0], point[1]-font.getsize(text)[1]), text, color, font=font)
     img = np.asarray(pilimg)
     return img
 
@@ -51,6 +52,7 @@ def inference(net, image, conf_thresh=0.5, iou_thresh=0.4, target_shape=(160, 16
     # keep_idx is the alive bounding box after nms.
     keep_idxs = single_class_non_max_suppression(y_bboxes, bbox_max_scores, conf_thresh=conf_thresh, iou_thresh=iou_thresh)
     # keep_idxs  = cv2.dnn.NMSBoxes(y_bboxes.tolist(), bbox_max_scores.tolist(), conf_thresh, iou_thresh)[:,0]
+    tl = round(0.002 * (height + width) * 0.5) + 1  # line thickness
     for idx in keep_idxs:
         conf = float(bbox_max_scores[idx])
         class_id = bbox_max_score_classes[idx]
@@ -61,9 +63,9 @@ def inference(net, image, conf_thresh=0.5, iou_thresh=0.4, target_shape=(160, 16
         xmax = min(int(bbox[2] * width), width)
         ymax = min(int(bbox[3] * height), height)
         if draw_result:
-            cv2.rectangle(image, (xmin, ymin), (xmax, ymax), colors[class_id], 2)
+            cv2.rectangle(image, (xmin, ymin), (xmax, ymax), colors[class_id], thickness=tl)
             if chinese:
-                image = puttext_chinese(image, id2chiclass[class_id], (xmin + 2, ymin - 20), colors[class_id])  ###puttext_chinese
+                image = puttext_chinese(image, id2chiclass[class_id], (xmin, ymin), colors[class_id])  ###puttext_chinese
             else:
                 cv2.putText(image, "%s: %.2f" % (id2class[class_id], conf), (xmin + 2, ymin - 2),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, colors[class_id])
@@ -78,7 +80,7 @@ def run_on_video(Net, video_path, conf_thresh=0.5):
     while status:
         status, img_raw = cap.read()
         if not status:
-            print('Done processing!!!')
+            print("Done processing !!!")
             break
         img_raw = cv2.cvtColor(img_raw, cv2.COLOR_BGR2RGB)
         img_raw = inference(Net, img_raw, target_shape=(260, 260), conf_thresh=conf_thresh)
@@ -101,6 +103,7 @@ if __name__ == "__main__":
         img = cv2.imread(args.img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         result = inference(Net, img, target_shape=(260, 260))
+        cv2.namedWindow('detect', cv2.WINDOW_NORMAL)
         cv2.imshow('detect', result[:,:,::-1])
         cv2.waitKey(0)
         cv2.destroyAllWindows()
