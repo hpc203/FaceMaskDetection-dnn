@@ -19,7 +19,7 @@ anchors = generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios)
 anchors_exp = np.expand_dims(anchors, axis=0)
 
 id2class = {0: 'Mask', 1: 'NoMask'}
-id2chiclass = {0: '您带了口罩', 1: '您没有戴口罩'}
+id2chiclass = {0: '您戴了口罩', 1: '您没有戴口罩'}
 colors = ((0, 255, 0), (255, 0 , 0))
 
 def puttext_chinese(img, text, point, color):
