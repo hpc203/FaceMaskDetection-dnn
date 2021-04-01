@@ -2,3 +2,5 @@
 这个项目是基于原始的人脸口罩检测https://github.com/AIZOOTech/FaceMaskDetection
 本项目是属于它的延伸，在AIZOOTech的项目里，提供了pytorch,tensorflow,caffe,keras,mxnet这五种深度学习框架的前向推理，检测人脸并判断是否佩戴了口罩。在本项目中，使用opencv里的dnn模块做深度学习前向推理，从而摆脱了在前向推理时对深度学习框架的依赖。在本项目中，只需要opencv,numpy,PIL,argparse这4个库，即可完成人脸口罩检测的深度学习前向推理任务，不再需要额外安装任何深度学习框架了。假如你的机器上的python环境里没有opencv，那你在终端输入
 pip install opencv-python完成opencv的安装，然后运行python opencv_dnn_infer.py
+
+C++版本的主程序是main.cpp，如果运行程序时在readNet这一句出错，那很有可能是你的opencv版本问题，这时需要升级opencv的版本
