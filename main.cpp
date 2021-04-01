@@ -159,7 +159,7 @@ void FaceMask::detect(Mat &srcimg)
 int main()
 {
     FaceMask model;
-	string imgpath = "demo2.jpg";
+	string imgpath = "img/demo2.jpg";
 	Mat srcimg = imread(imgpath);
     model.detect(srcimg);
 
